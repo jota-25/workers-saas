@@ -1,10 +1,15 @@
+import { config } from "dotenv";
+
+// ✅ Carga .env.test explícitamente
+config({ path: ".env.test", override: true });
+
 import pkg from "pg";
 const { Pool } = pkg;
 
 // ✅ Pool separado para tests
 export const testPool = new Pool({
-  connectionString: process.env.DATABASE_URL || 
-    "postgresql://postgres:postgres@localhost:5432/workers_test"
+  connectionString: process.env.DATABASE_URL,
+  ssl: false
 });
 
 // Limpia y recrea las tablas antes de cada suite de tests
@@ -54,8 +59,42 @@ export const setupTestDB = async () => {
       ip TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     );
+    CREATE TABLE IF NOT EXISTS workers (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(150) UNIQUE NOT NULL,
+      position VARCHAR(100) NOT NULL,
+      is_active BOOLEAN DEFAULT true,
+      user_id INT REFERENCES users(id),
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS invitations (
+      id SERIAL PRIMARY KEY,
+      email VARCHAR(150) NOT NULL,
+      token TEXT UNIQUE NOT NULL,
+      worker_id INT REFERENCES workers(id),
+      role_id INT REFERENCES roles(id),
+      used BOOLEAN DEFAULT false,
+      expires_at TIMESTAMP NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS audit_trail (
+      id SERIAL PRIMARY KEY,
+      user_id INT,
+      action TEXT NOT NULL,
+      resource TEXT,
+      resource_id INT,
+      before JSONB,
+      after JSONB,
+      ip TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `);
 };
+
 
 export const cleanTestDB = async () => {
   await testPool.query(`

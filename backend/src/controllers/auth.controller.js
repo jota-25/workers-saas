@@ -47,32 +47,39 @@ export const login = async (req, res) => {
   try {
     const { login, password } = req.body;
 
+    // ✅ Validación temprana — 400 si faltan campos
+    if (!login || !password) {
+      return res.status(400).json({ message: "Email y contraseña requeridos" });
+    }
+
+    
     const result = await pool.query(
-      `
-      SELECT u.*, r.level
-      FROM users u
-      JOIN roles r ON u.role_id = r.id
-      WHERE (u.email = $1 OR u.nickname = $1)
-      AND u.is_active = true
-      `,
+      `SELECT u.*, r.level FROM users u
+      JOIN roles r ON r.id = u.role_id
+      WHERE u.email = $1 OR u.nickname = $1`,
       [login]
     );
 
-    if (result.rows.length === 0) {
+   // 2. ¿Existe?
+    if (result.rowCount === 0) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
     const user = result.rows[0];
 
+    // 3. ¿Verificado? — antes de comparar password
     if (!user.is_verified) {
       return res.status(403).json({ message: "Verifica tu email primero" });
     }
 
-    
+    // 4. ¿Activo? — antes de comparar password
+    if (!user.is_active) {
+      return res.status(403).json({ message: "Cuenta desactivada" });
+    }
 
-    const isValid = await bcrypt.compare(password, user.password);
-
-    if (!isValid) {
+    // 5. ¿Password correcto?
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
     
