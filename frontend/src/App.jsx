@@ -7,6 +7,8 @@ import Workers from "./pages/Workers";
 import Users from "./pages/Users";
 import Logs from "./pages/Logs";
 import Sessions from "./pages/Sessions";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 // ✅ Componente que protege rutas — si no hay sesión, redirige al login
 const PrivateRoute = ({ children, minLevel = 0 }) => {
@@ -31,6 +33,8 @@ export default function App() {
     <Routes>
       {/* Ruta pública */}
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Rutas protegidas */}
       <Route path="/dashboard" element={
