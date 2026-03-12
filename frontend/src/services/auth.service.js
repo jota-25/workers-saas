@@ -22,3 +22,8 @@ export const resetPasswordRequest = async (token, newPassword) => {
   const res = await api.post("/auth/reset-password", { token, newPassword });
   return res.data;
 };
+
+export const acceptInviteRequest = async (token, password, nickname) => {
+  const res = await api.post("/auth/accept-invite", { token, password, nickname });
+  return res.data;
+};

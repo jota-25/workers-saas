@@ -293,11 +293,35 @@ export const acceptInvite = async (req, res, next) => {
     );
 
     await pool.query(
-      `DELETE FROM invitations WHERE id=$1`,
+      `UPDATE invitations SET used = true WHERE id=$1`,
       [data.id]
     );
 
     res.json({ message: "Cuenta creada correctamente" });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getInvite = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+
+    const result = await pool.query(
+      `SELECT email FROM invitations
+       WHERE token = $1
+       AND expires_at > NOW()
+       AND used = false`,
+      [token]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(400).json({ message: "Invitación inválida o expirada" });
+    }
+
+    //  Solo devolvemos el email — no el token ni datos sensibles
+    res.json({ email: result.rows[0].email });
 
   } catch (error) {
     next(error);

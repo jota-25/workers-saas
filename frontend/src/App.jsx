@@ -9,6 +9,8 @@ import Logs from "./pages/Logs";
 import Sessions from "./pages/Sessions";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import AcceptInvite from "./pages/AcceptInvite";
+
 
 // ✅ Componente que protege rutas — si no hay sesión, redirige al login
 const PrivateRoute = ({ children, minLevel = 0 }) => {
@@ -35,6 +37,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/invite/:token" element={<AcceptInvite />} />
 
       {/* Rutas protegidas */}
       <Route path="/dashboard" element={
