@@ -5,7 +5,13 @@ import pkg from "pg";
 const { Pool } = pkg;
 
 
-export const pool = new Pool({
+export const pool = new Pool(process.env.DATABASE_URL
+  ? {
+        
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }
+      }
+    :{
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
