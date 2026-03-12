@@ -20,7 +20,7 @@ app.use(cors({
   origin: ["http://localhost:5173", // URL del frontend en desarrollo
     "http://localhost",       // Docker
     "http://localhost:80",     // Docker alternativo 
-    "https://workers-saas.vercel.app"       // ← producción (Vercel)
+    "https://github.com/jota-25/workers-saas/tree/main"       // ← producción (Vercel)
   ],     
 
   credentials: true                  // permite enviar cookies/headers de auth
