@@ -3,6 +3,7 @@ import { pool } from "../db.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { hashToken } from "../utils/hash.js";
+import { sendEmail } from "../utils/mailer.js";
 
 
 export const register = async (req, res) => {
@@ -33,9 +34,26 @@ export const register = async (req, res) => {
     [name, email, hashedPassword, role, emailToken]
     );
 
-    console.log(
-      `Link de verificación: http://localhost:3000/auth/verify-email?token=${emailToken}`
-    );
+    // en producción aquí enviarías el email
+    //console.log(      `Link de verificación: http://localhost:3000/auth/verify-email?token=${emailToken}`    );
+
+    const verifyLink =
+    `${process.env.FRONTEND_URL}/verify-email?token=${emailToken}`;
+
+      await sendEmail({
+        to: email,
+        subject: "Verifica tu correo",
+        html: `
+          <h2>Verificación de correo</h2>
+
+          <p>Haz clic en el siguiente enlace:</p>
+
+          <a href="${verifyLink}">
+            Verificar correo
+          </a>
+        `
+      });
+
 
     res.json(result.rows[0]);
   } catch (error) {
@@ -226,10 +244,27 @@ export const forgotPassword = async (req, res, next) => {
       "UPDATE users SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3",
       [token, expires, email]
     );
+    // En producción aquí enviarías el email
+    //console.log(  `Reset link: http://localhost:3000/auth/reset-password?token=${token}`    );
+    const resetLink =
+      `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
-    console.log(
-      `Reset link: http://localhost:3000/auth/reset-password?token=${token}`
-    );
+    await sendEmail({
+      to: email,
+      subject: "Restablecer contraseña",
+      html: `
+        <h2>Recuperación de contraseña</h2>
+
+        <p>Haz clic en el siguiente enlace:</p>
+
+        <a href="${resetLink}">
+          Restablecer contraseña
+        </a>
+
+        <p>Este enlace expira en 15 minutos.</p>
+      `
+    });
+
 
     res.json({ message: "Revisa tu correo" });
   } catch (error) {

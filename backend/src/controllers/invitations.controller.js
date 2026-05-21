@@ -1,5 +1,6 @@
 import { pool } from "../db.js";
 import { generateInviteToken } from "../utils/invite.js";
+import { sendEmail } from "../utils/mailer.js";
 
 // ================================
 // LISTAR INVITACIONES
@@ -56,10 +57,25 @@ export const resendInvitation = async (req, res, next) => {
     );
 
     // En producción aquí enviarías el email
-    console.log(
-      `Invite reenviado: ${process.env.FRONTEND_URL || "http://localhost:5173"}/invite/${newToken}`
-    );
+    //console.log(       `Invite reenviado: ${process.env.FRONTEND_URL || "http://localhost:5173"}/invite/${newToken}`    );
 
+    const inviteLink = `${process.env.FRONTEND_URL}/invite/${newToken}`;
+
+    await sendEmail({
+      to: existing.rows[0].email,
+      subject: "Invitación reenviada",
+      html: `
+        <h2>Nueva invitación</h2>
+
+        <p>Tu invitación fue reenviada.</p>
+
+        <a href="${inviteLink}">
+          Aceptar invitación
+        </a>
+
+        <p>El enlace expira en 2 días.</p>
+      `
+    });
     res.json({ message: "Invitación reenviada" });
 
   } catch (error) {

@@ -22,7 +22,7 @@ const loginAsAdmin = async () => {
     ["admin@test.com", "admin", hashed, role.rows[0].id]
   );
 
-  // ✅ Generamos el token directamente sin pasar por el login
+  //  Generamos el token directamente sin pasar por el login
   const token = jwt.sign(
     { id: user.rows[0].id, roleId: role.rows[0].id, level: role.rows[0].level },
     process.env.JWT_SECRET || "test_secret_for_ci",

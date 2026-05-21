@@ -3,6 +3,7 @@ import {createWorkerSchema,updateWorkerSchema,idSchema} from "../schemas/worker.
 import { logActivity } from "../utils/logger.js";
 import { generateInviteToken } from "../utils/invite.js";
 import { logAudit } from "../utils/audit.js";
+import { sendEmail } from "../utils/mailer.js";
 
 /* filtros del CRUD
   filtro de busqueda por nombre
@@ -198,8 +199,29 @@ export const createWorker = async (req, res, next) => {
       [email, token, roleId, workerId]
     );
 
-    console.log(`Invite link: http://localhost:3000/invite/${token}`);
+    // Enviar email con el token (en producción, aquí enviarías el email real)
+    const inviteLink = `${process.env.FRONTEND_URL}/invite/${token}`; 
 
+    await sendEmail({
+      to: email,
+      subject: "Invitación a Workers SaaS",
+      html: `
+        <h2>Bienvenido a Workers SaaS</h2>
+
+        <p>Has sido invitado al sistema.</p>
+
+        <p>
+          Haz clic aquí para crear tu cuenta:
+        </p>
+
+        <a href="${inviteLink}">
+          Crear cuenta
+        </a>
+
+        <p>El enlace expira en 2 días.</p>
+      `
+    });
+    
     // Registra QUÉ PASÓ
     await logActivity({
       userId: req.user.id,
