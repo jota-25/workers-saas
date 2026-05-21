@@ -9,7 +9,7 @@ import { resetPassword } from "../controllers/auth.controller.js";
 import { activityLogger } from "../middlewares/activity.middleware.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { getInvite } from "../controllers/auth.controller.js";
-
+import { acceptInvite } from "../controllers/auth.controller.js";
 
 
 const router = Router();
@@ -19,6 +19,8 @@ router.post("/register", register);
 router.get("/verify-email", verifyEmail);
 
 router.get("/invite/:token", getInvite);
+
+router.post("/accept-invite", acceptInvite);
 
 router.post("/login", loginLimiter, activityLogger("LOGIN","auth"), login);
 
