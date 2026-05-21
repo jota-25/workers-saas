@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
@@ -9,6 +9,12 @@ export const transporter = nodemailer.createTransport({
 });
 
 export const sendEmail = async ({ to, subject, html }) => {
+
+  // NO enviar emails en tests
+  if (process.env.NODE_ENV === "test") {
+    return;
+  }
+
   return transporter.sendMail({
     from: `"Workers SaaS" <${process.env.EMAIL_USER}>`,
     to,
