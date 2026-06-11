@@ -17,8 +17,11 @@ beforeEach(async () => {
 // Antes de cada test - limpiar cache(redis)
 beforeEach(async () => {
   /*console.log("Limpiando Redis...");*/ // solo para ver si funciona el redis 
-  await redis.flushall();
+  if (redis) {
+    await redis.flushall();
+  }
 });
+
 
 //  Después de todos los tests — cerrar conexión
 afterAll(async () => {

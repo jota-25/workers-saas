@@ -37,7 +37,7 @@ export const userRepository = {
     const cacheKey = `user:${id}:withRole`;
 
     const cachedUser =
-      await redis.get(cacheKey);
+      redis ? await redis.get(cacheKey) : null;
 
     if (cachedUser) {
       console.log(`Redis HIT -> ${cacheKey}`);
@@ -55,7 +55,7 @@ export const userRepository = {
       },
     });
 
-    if (user) {
+    if (redis && user) {
       await redis.set(
         cacheKey,
         user,
@@ -73,7 +73,7 @@ export const userRepository = {
     const cacheKey = `login:${login}`;
 
     const cachedUser =
-      await redis.get(cacheKey);
+      redis ? await redis.get(cacheKey): null;
 
     if (cachedUser) {
       console.log(`Redis HIT -> ${cacheKey}`);
@@ -94,7 +94,7 @@ export const userRepository = {
       },
     });
 
-    if (user) {
+    if (redis && user) {
       await redis.set(
         cacheKey,
         user,
@@ -136,11 +136,13 @@ export const userRepository = {
         data,
       });
 
-    await Promise.all([
-      redis.del(`user:${id}:withRole`),
-      redis.del(`login:${oldUser.email}`),
-      redis.del(`login:${oldUser.nickname}`)
-    ]);
+    if (redis) {
+      await Promise.all([
+        redis.del(`user:${id}:withRole`),
+        redis.del(`login:${oldUser.email}`),
+        redis.del(`login:${oldUser.nickname}`)
+      ]);
+    }
 
     return user;
   },
@@ -210,10 +212,5 @@ export const userRepository = {
     });
   },
   
-
-  
-
-  
-
 
 };

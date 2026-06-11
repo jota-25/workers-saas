@@ -6,7 +6,7 @@ export const roleRepository = {
   async findById(id) {
 
     const cacheKey = `role:id:${id}`;
-    const cachedRole = await redis.get(cacheKey);
+    const cachedRole =  redis ? await redis.get(cacheKey) : null;
 
     if (cachedRole) {
       console.log(`Redis hit -> ${cacheKey}`);
@@ -19,12 +19,12 @@ export const roleRepository = {
         id,
       },
     });
-    if (role){
+    if (redis && role){
       await redis.set(
         cacheKey,
         role,
         {
-          EX: 3600, // Expira en 1 hora
+          ex: 3600, // Expira en 1 hora
         }
       );
     }
@@ -34,7 +34,7 @@ export const roleRepository = {
   async findByName(name) {
 
     const cacheKey = `role:name:${name}`;
-    const cachedRole = await redis.get(cacheKey);
+    const cachedRole = redis ? await redis.get(cacheKey): null;
 
     if (cachedRole) {
       console.log(`Redis hit -> ${cacheKey}`);
@@ -47,10 +47,10 @@ export const roleRepository = {
         name,
       },
     });
-   if (role) {
+   if (redis && role) {
     await redis.set(cacheKey,role, {
 
-      EX: 3600, // Expira en 1 hora
+      ex: 3600, // Expira en 1 hora
     }
   );
 

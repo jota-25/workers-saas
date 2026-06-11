@@ -36,7 +36,7 @@ router.post("/reset-password", activityLogger("PASSWORD_RESET","auth"), resetPas
 
 router.post("/logout", verifyToken, logout);
 
-router.get(
+/*router.get(
   "/test",
   verifyToken,
   requireLevel(90),
@@ -50,7 +50,7 @@ router.get(
     });
 
   }
-);  // solo era para probar si el refreshToken si guardaba el token con los datos como el rol, ya que el redis guardara en cache el rol y usara el token para sacarlo 
+);  */ // solo era para probar si el refreshToken si guardaba el token con los datos como el rol, ya que el redis guardara en cache el rol y usara el token para sacarlo 
 
 
 
